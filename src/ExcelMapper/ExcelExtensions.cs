@@ -8,7 +8,7 @@ namespace ExcelMapper
 
     public static class ExcelExtensions
     {
-        public static HeaderConfiguration<T> Map<T>(this HeaderConfiguration<T> configuration,
+        public static HeaderConfiguration<T> Column<T>(this HeaderConfiguration<T> configuration,
             string header,
             Expression<Func<T, object>> prop)  where T:new()
         {
@@ -16,11 +16,11 @@ namespace ExcelMapper
             return configuration;
         }
 
-        public static HeaderConfiguration<T> Map<T>(this HeaderConfiguration<T> configuration,
+        public static HeaderConfiguration<T> Column<T>(this HeaderConfiguration<T> configuration,
             Expression<Func<T, object>> prop) where T:new() =>
-            configuration.Map(null, prop);
+            configuration.Column(null, prop);
 
-        public static ColumnConfiguration<T> Map<T>(this ColumnConfiguration<T> configuration,
+        public static ColumnConfiguration<T> Column<T>(this ColumnConfiguration<T> configuration,
             int column,
             Expression<Func<T, object>> prop
         )  where T:new()
@@ -53,7 +53,7 @@ namespace ExcelMapper
         public static Settings Worksheet<T>(this Settings settings, Action<ColumnConfiguration<T>> configure)  where T:new()
             => settings.Worksheet(null, configure);
 
-        public static MemberInfo GetMemberFromExpression<T>(this Expression<Func<T, object>> field)
+        internal static MemberInfo GetMemberFromExpression<T>(this Expression<Func<T, object>> field)
         {
             var member = field.Body as MemberExpression ??
                          (field.Body as UnaryExpression)?.Operand as MemberExpression;
@@ -65,7 +65,7 @@ namespace ExcelMapper
             return member.Member;
         }
 
-        public static void Set(this object instance , MemberInfo member,object value)
+        internal static void Set(this object instance , MemberInfo member,object value)
         {
             object ProcessValue(Type expectedType)
             {

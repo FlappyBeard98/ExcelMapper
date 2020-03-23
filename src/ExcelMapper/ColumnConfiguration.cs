@@ -1,30 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using ClosedXML.Excel;
 
 namespace ExcelMapper
 {
-    public class HeaderConfiguration<T> : Configuration where T:new()
+    public class ColumnConfiguration<T> : Configuration  where T:new()
     {
-        public override  Type Type  => typeof(T);
+        internal override  Type Type  => typeof(T);
 
-        public override IEnumerable<object> ApplyToWorkSheet(IXLWorksheet xlWorksheet)
+        internal override IEnumerable<object> ApplyToWorkSheet(IXLWorksheet xlWorksheet)
         {
             {
                 var result = new List<object>();
-                foreach (var row in xlWorksheet.Rows().Skip(1))
-                {
+                foreach (var row in xlWorksheet.Rows())
+                { 
                     if (row.IsEmpty())
                         break;
                     
                     var instance = Activator.CreateInstance(Type);
                     foreach (var column in xlWorksheet.Columns())
                     {
-                    
-                        var member =  _columnsConfiguration.TryGetValue(column.Cell(1).Value?.ToString() ?? "", out var m) ? m : null;
+
+                        var member = _columnsConfiguration.TryGetValue(column.ColumnNumber(), out var m) ? m : null;
                         if (member == null)
                             continue;
                         var value = column.Cell(row.RowNumber()).Value;
@@ -38,14 +37,12 @@ namespace ExcelMapper
             }
         }
 
+        private readonly Dictionary<int, MemberInfo> _columnsConfiguration = new Dictionary<int, MemberInfo>();
 
-        private readonly Dictionary<string, MemberInfo> _columnsConfiguration = new Dictionary<string, MemberInfo>();
-
-        public void Add(Expression<Func<T, object>> prop, string header)
+        internal void Add(Expression<Func<T, object>> prop, int column)
         {
             var memberInfo = prop.GetMemberFromExpression();
-            header = string.IsNullOrWhiteSpace(header) ? memberInfo.Name : header;
-            _columnsConfiguration.Add(header, memberInfo);
+            _columnsConfiguration.Add(column, memberInfo);
         }
     }
 }

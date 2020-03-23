@@ -6,9 +6,9 @@ namespace ExcelMapper
 {
     public abstract class Configuration
     {
-        public abstract Type Type { get; }
+        internal abstract Type Type { get; }
 
-        public abstract IEnumerable<object> ApplyToWorkSheet(IXLWorksheet xlWorksheet);
+        internal abstract IEnumerable<object> ApplyToWorkSheet(IXLWorksheet xlWorksheet);
         
     }
 }

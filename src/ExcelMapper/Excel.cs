@@ -23,9 +23,12 @@ namespace ExcelMapper
 
         private void ReadAll()
         {
-            using var workbook = new XLWorkbook(_filename);
-            _items = _settings.ApplyToWorkbook(workbook);
-            _readCompleted = true;
+            using (var workbook = new XLWorkbook(_filename))
+            {
+                _items = _settings.ApplyToWorkbook(workbook);
+                _readCompleted = true;
+            }
+
         }
 
         public IEnumerable<T> Get<T>(bool reread = false)
